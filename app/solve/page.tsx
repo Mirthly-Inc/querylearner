@@ -13,16 +13,19 @@ export default function Solve() {
         problem: `Binary Search, Given an array of integers nums which is sorted in ascending order, and an integer target, write a function to search target in nums. If target exists, then return its index. Otherwise, return -1.`,
         code: `class Main {
                   public static void main(String[] args){
-                      int[] arr = {-1,0,3,5,9,12};
-                      int target = 13;
+                      int[] arr = {5};
+                      int target = 5;
                       int solution = search(arr,target);
                       System.out.println(solution);
                   }
 
                   public static int search(int[] nums, int target) {
+                      if(target>nums[nums.length-1] || target<nums[0]){
+                          return -1;
+                      }
                       int start = 0;
-                      int end = nums.length;
-                      while(start<=end){
+                      int end = nums.length-1;
+                      while(start<end){
                           int mid = start + (end - start)/2;
                           if(nums[mid]==target){
                               return mid;
@@ -30,7 +33,7 @@ export default function Solve() {
                           if(nums[mid]>target){
                               end = mid - 1;
                           }else{
-                              start = mid + 1;
+                              start = mid+1;
                           }
                       }
                       return -1;

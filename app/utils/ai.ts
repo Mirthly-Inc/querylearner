@@ -42,7 +42,6 @@ export async function code_execution(
     const stdoutput = atob(result.stdout).trim();
     console.log(result.stdout);
     if (stdoutput === expected) {
-      console.log("Success");
       return "success";
     } else {
       console.log(stdoutput);
@@ -80,9 +79,6 @@ async function submitCode(encodedSourceCode: string) {
     options
   );
   const data = await response.json();
-  console.log(data);
-  console.log(data.token);
-
   return data.token;
 }
 

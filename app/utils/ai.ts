@@ -6,60 +6,87 @@ const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 export async function get_suggestions(
   problem: string,
   code: string,
-  error: string
+  error: string,
+  expected: string,
+  possible_err: string
 ) {
   console.log("Reached generatio part");
   const prompt = `You will receive a coding problem, user written code, error in the code after execution
                     You will use the Socratic method to answer the question.For example:Instead of saying time limit
                     exceeded, give the user some hint to look out instead of revealing the time limit exceeded finally
-                    making the user to understand the error.
+                    making the user to understand the error or the wrong output.
                     
                     problem:${problem}
                     code:${code}
-                    error:${error}
-                    Return: {'suggestion': "Give suggestions as per the instructions."}s`;
+                    error or output:${error}
+                    expected_output:${expected}
+                    Std_error:${possible_err ? possible_err : ""}
+                    Return: {'suggestion': "Give suggestions only do not say about the error."}`;
 
   const result = await model.generateContentStream(prompt);
   const ref = (await result.response).text();
   return ref;
 }
 
-export async function code_execution(problem: string, code: string) {
+export async function code_execution(
+  problem: string,
+  code: string,
+  expected: string
+) {
   console.log("Entered");
-  // try {
-  //   const encodedSourceCode = btoa(code);
+  try {
+    const encodedSourceCode = btoa(code);
+    const submissionToken = await submitCode(encodedSourceCode);
+    const result = await getSubmissionResult(submissionToken);
+    console.log(result);
+    const stdoutput = atob(result.stdout).trim();
+    console.log(result.stdout);
+    if (stdoutput === expected) {
+      console.log("Success");
+      return "success";
+    } else {
+      console.log(stdoutput);
+      const possible_err = atob(result.stderr);
+      return await get_suggestions(
+        problem,
+        code,
+        stdoutput,
+        expected,
+        possible_err
+      );
+    }
+  } catch (error) {
+    console.error("Error in code execution:", error);
+    return "Error occurred during code execution";
+  }
+}
 
-  //   // API request options
-  //   const options = {
-  //     method: "POST",
-  //     headers: {
-  //       "content-type": "application/json",
-  //       "Content-Type": "application/json",
-  //       "x-rapidapi-key": "0875e2be83mshbb78dca9101e1aep17df79jsn6093ba6a2a61",
-  //       "x-rapidapi-host": "judge0-ce.p.rapidapi.com",
-  //     },
-  //     body: JSON.stringify({
-  //       language_id: 62,
-  //       source_code: encodedSourceCode,
-  //     }),
-  //   };
+async function submitCode(encodedSourceCode: string) {
+  const options = {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      "x-rapidapi-key": "0875e2be83mshbb78dca9101e1aep17df79jsn6093ba6a2a61",
+      "x-rapidapi-host": "judge0-ce.p.rapidapi.com",
+    },
+    body: JSON.stringify({
+      language_id: 62,
+      source_code: encodedSourceCode,
+    }),
+  };
 
-  //   // Make the API request
-  //   await fetch(
-  //     "https://judge0-ce.p.rapidapi.com/submissions?base64_encoded=true&fields=*",
-  //     options
-  //   )
-  //     .then((response) => response.json())
-  //     .then((response) => console.log(response))
-  //     .catch((err) => console.error(err));
-  //   // const ans = await get_suggestions(problem, code, error);
-  // } catch (error) {
-  //   console.error(error);
-  // }
+  const response = await fetch(
+    "https://judge0-ce.p.rapidapi.com/submissions?base64_encoded=true&fields=*",
+    options
+  );
+  const data = await response.json();
+  console.log(data);
+  console.log(data.token);
 
-  // Replace 'YOUR_SUBMISSION_TOKEN' with the actual token you received from the POST request
-  const submissionToken = "6bc8dfe8-4469-41c2-8efa-f67786b79919";
+  return data.token;
+}
 
+async function getSubmissionResult(submissionToken: string) {
   const options = {
     method: "GET",
     headers: {
@@ -68,15 +95,11 @@ export async function code_execution(problem: string, code: string) {
     },
   };
 
-  await fetch(
+  await new Promise((resolve) => setTimeout(resolve, 2000));
+
+  const response = await fetch(
     `https://judge0-ce.p.rapidapi.com/submissions/${submissionToken}?base64_encoded=true&fields=*`,
     options
-  )
-    .then((response) => response.json())
-    .then((response) => {
-      console.log(response);
-    })
-    .catch((err) => console.error("Error:", err));
-  console.log("Exited");
-  return "Statcox";
+  );
+  return await response.json();
 }

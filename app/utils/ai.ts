@@ -10,7 +10,6 @@ export async function get_suggestions(
   expected: string,
   possible_err: string
 ) {
-  console.log("Reached generatio part");
   const prompt = `You will receive a coding problem, user written code, error in the code after execution
                     You will use the Socratic method to answer the question.For example:Instead of saying time limit
                     exceeded, give the user some hint to look out instead of revealing the time limit exceeded finally
@@ -33,18 +32,14 @@ export async function code_execution(
   code: string,
   expected: string
 ) {
-  console.log("Entered");
   try {
     const encodedSourceCode = btoa(code);
     const submissionToken = await submitCode(encodedSourceCode);
     const result = await getSubmissionResult(submissionToken);
-    console.log(result);
     const stdoutput = atob(result.stdout).trim();
-    console.log(result.stdout);
     if (stdoutput === expected) {
       return "success";
     } else {
-      console.log(stdoutput);
       const possible_err = atob(result.stderr);
       return await get_suggestions(
         problem,

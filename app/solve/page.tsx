@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import ReactMarkdown from "react-markdown";
 
 export default function Solve() {
   const [data, setData] = useState("");
@@ -42,18 +43,27 @@ export default function Solve() {
         expected: "0",
       }),
     }).then((response) => response.json());
-    // setData(res);
+
+    if (res.output === "success") {
+      setData("Submission Successful");
+    } else {
+      setData(res.output);
+    }
     console.log(res);
   };
   return (
-    <div className="w-full min-h-screen flex items-center justify-center">
+    <div className="w-full rounded-lg bg-neutral-800 h-full flex-col">
+      <div className="p-3 border-b border-white">Code</div>
+      <textarea className="h-fit w-full border-2 border-white text-black p-4" />
       <button
         onClick={handleClick}
         className="border-2 border-white p-2 rounded-lg hover:bg-neutral-900"
       >
         Click to solve
       </button>
-      {data}
+      <ReactMarkdown className="text-white text-xl pt-10 border-2 border-white justify-center p-4">
+        {data}
+      </ReactMarkdown>
     </div>
   );
 }

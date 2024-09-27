@@ -4,8 +4,8 @@ export default function SolveLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="w-full flex border-2 border-white h-screen">
-      <div className="text-white text-2xl w-2/3 m-4 rounded-lg p-4 bg-neutral-800">
+    <div className="w-full flex h-screen">
+      <div className="text-white text-2xl w-2/3 m-4 rounded-lg p-4 bg-neutral-800 border border-neutral-400">
         <div className="font-semibold">1. Binary Search</div>
         <div className="text-base pt-4 flex flex-col gap-2">
           <div>

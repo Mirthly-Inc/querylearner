@@ -18,7 +18,6 @@ export default function Solve() {
     if (loading) {
       return;
     }
-    console.log("Clicked");
     setLoading(true);
     const res = await fetch("http://localhost:3000/api/v1/solve", {
       method: "POST",
@@ -37,10 +36,10 @@ export default function Solve() {
     setLoading(false);
   };
   return (
-    <div className="w-full rounded-lg bg-neutral-800 h-full flex-col text-white">
+    <div className="w-full rounded-lg bg-neutral-800 border border-neutral-400 h-full flex-col text-white">
       <ResizablePanelGroup direction="vertical">
         <ResizablePanel defaultSize={75}>
-          <div className="p-3 border-b border-white">Code</div>
+          <div className="p-3 border-b border-neutral-400">Code</div>
           <Editor
             height="80vh"
             theme="vs-dark"
@@ -56,10 +55,10 @@ export default function Solve() {
           />
         </ResizablePanel>
         <ResizableHandle withHandle />
-        <ResizablePanel defaultSize={25}>
+        <ResizablePanel defaultSize={25} className="bg-neutral-700">
           <div className=" h-full">
-            <div className="flex w-full justify-between px-4  bg-neutral-700 items-center ">
-              <div className="p-4">Your suggestions will appear below</div>
+            <div className="flex w-full justify-between px-4 border-b border-neutral-400 bg-neutral-700 items-center ">
+              <div className="p-4 ">Your suggestions will appear below</div>
               <button
                 onClick={handleClick}
                 className="bg-violet-600 p-2 px-4 rounded-lg hover:bg-violet-900"
@@ -71,11 +70,16 @@ export default function Solve() {
                 )}
               </button>
             </div>
-            {data.length !== 0 && (
-              <ReactMarkdown className="text-white text-base pt-4 justify-center p-4">
-                {data}
-              </ReactMarkdown>
-            )}
+            {data.length !== 0 &&
+              (data === "Submission Successful" ? (
+                <div className="text-green-500 pl-8 pt-4">
+                  Your code works fine
+                </div>
+              ) : (
+                <ReactMarkdown className="text-white text-base pt-4 justify-center p-4">
+                  {data}
+                </ReactMarkdown>
+              ))}
           </div>
         </ResizablePanel>
       </ResizablePanelGroup>

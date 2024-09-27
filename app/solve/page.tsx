@@ -3,13 +3,23 @@
 import { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import Editor from "@monaco-editor/react";
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/ui/resizable";
 
 export default function Solve() {
   const [data, setData] = useState("");
   const [value, setValue] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleClick = async () => {
+    if (loading) {
+      return;
+    }
     console.log("Clicked");
+    setLoading(true);
     const res = await fetch("http://localhost:3000/api/v1/solve", {
       method: "POST",
       body: JSON.stringify({
@@ -24,30 +34,51 @@ export default function Solve() {
     } else {
       setData(res.output);
     }
-    console.log(res);
+    setLoading(false);
   };
   return (
-    <div className="w-full rounded-lg bg-neutral-800 h-full flex-col">
-      <div className="p-3 border-b border-white">Code</div>
-      <Editor
-        height="80vh"
-        theme="vs-dark"
-        language="java"
-        value={value}
-        onChange={(value) => setValue(value)}
-        defaultValue={`\npublic class Main {\n\tpublic static void main(String[] args) {\n\t\tint[] arr = {5};\n\t\tint target = 5;\n\t\tSystem.out.println(search(nums,target));\n\t}
+    <div className="w-full rounded-lg bg-neutral-800 h-full flex-col text-white">
+      <ResizablePanelGroup direction="vertical">
+        <ResizablePanel defaultSize={75}>
+          <div className="p-3 border-b border-white">Code</div>
+          <Editor
+            height="80vh"
+            theme="vs-dark"
+            language="java"
+            value={value}
+            onChange={(value) => {
+              if (value) {
+                setValue(value);
+              }
+            }}
+            defaultValue={`\npublic class Main {\n\tpublic static void main(String[] args) {\n\t\tint[] arr = {5};\n\t\tint target = 5;\n\t\tSystem.out.println(search(nums,target));\n\t}
           \n\tpublic static int search(int[] nums, int target) {\n\t\t//write your code here\n\n\t}\n}\n`}
-      />
-      <button
-        // onClick={handleClick}
-        onClick={() => console.log(value)}
-        className="border-2 border-white p-2 rounded-lg hover:bg-neutral-900"
-      >
-        Click to solve
-      </button>
-      {/* <ReactMarkdown className="text-white text-xl pt-10 border-2 border-white justify-center p-4">
-        {data}
-      </ReactMarkdown> */}
+          />
+        </ResizablePanel>
+        <ResizableHandle withHandle />
+        <ResizablePanel defaultSize={25}>
+          <div className=" h-full">
+            <div className="flex w-full justify-between px-4  bg-neutral-700 items-center ">
+              <div className="p-4">Your suggestions will appear below</div>
+              <button
+                onClick={handleClick}
+                className="bg-violet-600 p-2 px-4 rounded-lg hover:bg-violet-900"
+              >
+                {loading ? (
+                  <div className="cursor-not-allowed">Analyzing Code...</div>
+                ) : (
+                  "Click to solve"
+                )}
+              </button>
+            </div>
+            {data.length !== 0 && (
+              <ReactMarkdown className="text-white text-base pt-4 justify-center p-4">
+                {data}
+              </ReactMarkdown>
+            )}
+          </div>
+        </ResizablePanel>
+      </ResizablePanelGroup>
     </div>
   );
 }

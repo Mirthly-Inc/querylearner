@@ -6,7 +6,7 @@ export default function SolveLayout({
   return (
     <div className="w-full flex border-2 border-white h-screen">
       <div className="text-white text-2xl w-2/3 m-4 rounded-lg p-4 bg-neutral-800">
-        <div>Binary Search</div>
+        <div className="font-semibold">1. Binary Search</div>
         <div className="text-base pt-4 flex flex-col gap-2">
           <div>
             Given an array of integers nums which is sorted in ascending order,

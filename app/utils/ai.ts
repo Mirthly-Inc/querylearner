@@ -37,10 +37,6 @@ export async function code_execution(
     const submissionToken = await submitCode(encodedSourceCode);
     const result = await getSubmissionResult(submissionToken);
     const stdoutput = atob(result.stdout).trim();
-    console.log(result);
-    console.log(expected);
-    console.log(typeof stdoutput);
-    console.log(typeof expected);
     if (stdoutput === expected) {
       return "success";
     } else {

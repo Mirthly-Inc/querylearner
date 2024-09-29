@@ -51,7 +51,7 @@ export default function Solve() {
               }
             }}
             defaultValue={`\npublic class Main {\n\tpublic static void main(String[] args) {\n\t\tint[] arr = {5};\n\t\tint target = 5;\n\t\tSystem.out.println(search(nums,target));\n\t}
-          \n\tpublic static int search(int[] nums, int target) {\n\t\t//write your code here. Do not modify above code\n\n\t}\n}\n`}
+          \n\tpublic static int search(int[] arr, int target) {\n\t\t//write your code here. Do not modify above code\n\n\t}\n}\n`}
           />
         </ResizablePanel>
         <ResizableHandle withHandle />
@@ -76,9 +76,14 @@ export default function Solve() {
                   Your code works fine
                 </div>
               ) : (
-                <ReactMarkdown className="text-white text-base pt-4 justify-center p-4">
-                  {data}
-                </ReactMarkdown>
+                <div>
+                  <div className="pt-4 pl-4 text-orange-500">
+                    Oops there appears to be an error in the code!
+                  </div>
+                  <ReactMarkdown className="text-white text-base pt-4 justify-center p-4">
+                    {data}
+                  </ReactMarkdown>
+                </div>
               ))}
           </div>
         </ResizablePanel>

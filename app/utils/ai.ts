@@ -37,6 +37,10 @@ export async function code_execution(
     const submissionToken = await submitCode(encodedSourceCode);
     const result = await getSubmissionResult(submissionToken);
     const stdoutput = atob(result.stdout).trim();
+    console.log(result);
+    console.log(expected);
+    console.log(typeof stdoutput);
+    console.log(typeof expected);
     if (stdoutput === expected) {
       return "success";
     } else {
@@ -60,10 +64,11 @@ async function submitCode(encodedSourceCode: string) {
     method: "POST",
     headers: {
       "content-type": "application/json",
-      "x-rapidapi-key": "0875e2be83mshbb78dca9101e1aep17df79jsn6093ba6a2a61",
-      "x-rapidapi-host": "judge0-ce.p.rapidapi.com",
+      "x-rapidapi-key": process.env.NEXT_PUBLIC_X_RAPIDAPI_KEY!,
+      "x-rapidapi-host": process.env.NEXT_PUBLIC_X_RAPIDAPI_HOST!,
     },
     body: JSON.stringify({
+      //language ID for java
       language_id: 62,
       source_code: encodedSourceCode,
     }),
@@ -81,8 +86,8 @@ async function getSubmissionResult(submissionToken: string) {
   const options = {
     method: "GET",
     headers: {
-      "x-rapidapi-key": "0875e2be83mshbb78dca9101e1aep17df79jsn6093ba6a2a61",
-      "x-rapidapi-host": "judge0-ce.p.rapidapi.com",
+      "x-rapidapi-key": process.env.NEXT_PUBLIC_X_RAPIDAPI_KEY!,
+      "x-rapidapi-host": process.env.NEXT_PUBLIC_X_RAPIDAPI_HOST!,
     },
   };
 
